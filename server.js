@@ -44,9 +44,9 @@ db.once("open", function () {
 
 //SCRAPE the DATA!
 //define scrape route
-app.get("/saved", function (req, res) {
+app.get("./scraper", function (req, res) {
     //make request
-    request("http://reactkungfu.com/", function (error, response, html) {
+    request("https://www.theonion.com/", function (error, response, html) {
         //load html from request into cheerio
         var $ = cheerio.load(html);
         //tell it what to find and what to do with it, for each hgroup...
@@ -86,7 +86,7 @@ app.get("/", function (req, res) {
 
 //Retrieve the SCRAPED data from the database
 app.get("/articles", function (req, res) {
-    HwScrapedData.find({})
+    DataScrape.find({})
         .populate("notes")
         .exec(function (error, dbResult) {
             if (error) {
@@ -115,7 +115,7 @@ app.get("/notes", function (req, res) {
 // Grab an article by it's ObjectId and show the notes
 app.get("/articles/:id", function (req, res) {
     // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-    HwScrapedData.findOne({
+    DataScrape.findOne({
             "_id": req.params.id
         })
         // ..and populate all of the notes associated with it
@@ -151,7 +151,7 @@ app.post("/submit/:id", function (req, res) {
         // Otherwise
         else {
             // Find our user and push the new note id into the User's notes array
-            HwScrapedData.findOneAndUpdate({
+            DataScrape.findOneAndUpdate({
                 "_id": req.params.id
             }, {
                 $push: {
